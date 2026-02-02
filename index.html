@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Signal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#020617;
+  color:white;
+  font-family:Arial, sans-serif;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:15px;
+}
+.banner img{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:15px;
+}
+.box{
+  background:#0f172a;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+}
+h2{margin-top:0;}
+.signal{
+  font-size:38px;
+  margin:15px 0;
+  font-weight:bold;
+}
+.wingo{
+  font-size:20px;
+  color:#38bdf8;
+  margin-bottom:10px;
+}
+.big{color:#22c55e;}
+.small{color:#ef4444;}
+.green{color:#16a34a;}
+.red{color:#dc2626;}
+.wait{color:#eab308;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 🔰 Banner Image -->
+  <div class="banner">
+    <!-- নিজের ছবির লিংক বসান -->
+    <img src="https://i.postimg.cc/Fz0dnHkx/Picsart-26-02-03-01-51-57-523.jpg">
+  </div>
+
+  <!-- 👀 Live Signal Box -->
+  <div class="box">
+    <h2>LIVE SIGNAL</h2>
+    <div id="wingo" class="wingo">WAITING...</div>
+    <div id="signal" class="signal wait">WAIT</div>
+  </div>
+
+</div>
+
+<!-- 🔥 Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBmvhGbc7NA9uLdFGkvdWnej-SdgNzk5yk",
+  authDomain: "big-small-86ed8.firebaseapp.com",
+  databaseURL: "https://big-small-86ed8-default-rtdb.firebaseio.com",
+  projectId: "big-small-86ed8",
+  storageBucket: "big-small-86ed8.appspot.com",
+  messagingSenderId: "139562557169",
+  appId: "1:139562557169:web:16866c69c54bd9e8005350"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const signalRef = db.ref("liveSignal");
+
+signalRef.on("value", snap=>{
+  if(!snap.exists()) return;
+
+  const data = snap.val();
+  const signalEl = document.getElementById("signal");
+
+  document.getElementById("wingo").innerText = data.wingo;
+  signalEl.innerText = data.signal;
+
+  // reset class
+  signalEl.className = "signal";
+
+  if(data.signal === "BIG") signalEl.classList.add("big");
+  else if(data.signal === "SMALL") signalEl.classList.add("small");
+  else if(data.signal.includes("GREEN")) signalEl.classList.add("green");
+  else if(data.signal.includes("RED")) signalEl.classList.add("red");
+  else signalEl.classList.add("wait");
+});
+</script>
+
+</body>
+</html>
+Professional (Hack 100% Profit) No Tention
+যারা Dkwin‑এ কাজ করতে আগ্রহী, তারা দ্রুত একাউন্ট খুলুন।
+আমাদের সাথে কাজ করলে পাবেন নিয়মিত গাইডলাইন, প্রয়োজনীয় সাপোর্ট এবং বিভিন্ন এক্সক্লুসিভ সুবিধা।
+সঠিক নিয়ম মেনে কাজ করলে ভালো ফল পাওয়ার সুযোগ রয়েছে।
+আমাদের নির্দেশনা অনুযায়ী এগিয়ে চলুন—ধন্যবাদ।
+📞 লাইভ টাইম সাপোর্ট
+🛠️ প্রয়োজনীয় গাইডলাইন এবং সহায়তা
+💼 নিরাপদ ও নিশ্চিন্তে কাজ করার পরিবেশ
+ভবিষ্যতের জন্য নিজের দক্ষতা ও অভিজ্ঞতা গড়ুন।
+সুন্দর মন্তব্যের জন্য ধন্যবাদ। 
