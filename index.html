@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <title>Live Signal</title>
@@ -55,7 +55,7 @@ h2{
   padding:14px;
   border-radius:10px;
   margin-top:12px;
-  font-size:25px; /* ✅ 25px font */
+  font-size:25px;
   line-height:1.6;
   color:#e5e7eb;
   text-align:center;
@@ -68,6 +68,18 @@ h2{
 .red{color:#dc2626;}
 .wait{color:#eab308;}
 .hide{display:none;}
+
+/* Activate Voice Button */
+.activateBtn{
+  background:#f97316;
+  color:black;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  margin-top:15px;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -83,12 +95,12 @@ h2{
   <!-- 👀 Live Signal -->
   <div class="box">
     <h2>LIVE SIGNAL</h2>
-
     <div id="wingo" class="wingo">WAITING...</div>
     <div id="signal" class="signal wait">WAIT</div>
-
-    <!-- 🔔 Admin Message -->
     <div id="messageBox" class="message hide"></div>
+    
+    <!-- 🔊 Activate Voice for Telegram/In-App Browsers -->
+    <button id="activateVoiceBtn" class="activateBtn">ভয়েস চালু করতে ট্যাপ করুন</button>
   </div>
 
 </div>
@@ -112,11 +124,20 @@ firebase.initializeApp({
 const db = firebase.database();
 const signalRef = db.ref("liveSignal");
 
-// 🔊 Bangla Voice Function
-function speak(text){
-  if(!window.speechSynthesis) return;
+let voiceActivated = false;
 
-  const map = {
+// 🔊 Activate Voice Button
+document.getElementById("activateVoiceBtn").addEventListener("click", ()=>{
+  voiceActivated = true;
+  alert("ভয়েস সফলভাবে চালু হয়েছে! এখন Signal এর শব্দ শোনা যাবে।");
+  document.getElementById("activateVoiceBtn").classList.add("hide");
+});
+
+// 🔊 Bangla Voice Function
+function speak(signal, wingoText="", customText=""){
+  if(!voiceActivated || !window.speechSynthesis) return;
+
+  let map = {
     BIG:"বিগ সিগনাল",
     SMALL:"স্মল সিগনাল",
     GREEN:"গ্রিন সিগনাল",
@@ -125,10 +146,14 @@ function speak(text){
     OFF:"অফ",
     HOLD:"হোল্ড",
     PROFIT:"প্রফিট",
-    MESSAGE:"এডমিন মেসেজ"
+    MESSAGE: customText || "এডমিন মেসেজ"
   };
 
-  const msg = new SpeechSynthesisUtterance(map[text] || text);
+  // Wingo সময় থাকলে signal এর সাথে যোগ
+  let msgText = signal==="MESSAGE" ? (customText || "এডমিন মেসেজ") : 
+                (wingoText ? `Wingo ${wingoText} ${map[signal] || signal}` : (map[signal] || signal));
+
+  const msg = new SpeechSynthesisUtterance(msgText);
   msg.lang = "bn-BD";
   msg.rate = 0.95;
 
@@ -158,14 +183,14 @@ signalRef.on("value", snap=>{
 
   // 🔔 Voice Speak
   if(data.signal){
-    speak(data.signal);
+    speak(data.signal, data.wingo);
   }
 
   // 📢 Admin Message
   if(data.text && data.text.trim() !== ""){
     messageBox.classList.remove("hide");
     messageBox.innerText = data.text;
-    speak(data.text);
+    speak("MESSAGE", "", data.text);
   }else{
     messageBox.classList.add("hide");
   }
