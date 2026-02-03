@@ -22,28 +22,52 @@ body{
   border-radius:14px;
   margin-bottom:15px;
 }
+
+/* Main Box */
 .box{
   background:#0f172a;
-  padding:20px;
+  padding:18px;
   border-radius:14px;
   text-align:center;
 }
-h2{margin-top:0;}
+h2{
+  margin-top:0;
+  font-size:18px;
+}
+
+/* Wingo */
+.wingo{
+  font-size:18px;
+  color:#38bdf8;
+  margin-bottom:8px;
+}
+
+/* Signal */
 .signal{
-  font-size:38px;
-  margin:15px 0;
+  font-size:36px;
+  margin:10px 0;
   font-weight:bold;
 }
-.wingo{
-  font-size:20px;
-  color:#38bdf8;
-  margin-bottom:10px;
+
+/* Message Box */
+.message{
+  background:#020617;
+  padding:12px;
+  border-radius:10px;
+  margin-top:12px;
+  font-size:14px;
+  line-height:1.5;
+  color:#e5e7eb;
+  text-align:left;
 }
+
+/* Colors */
 .big{color:#22c55e;}
 .small{color:#ef4444;}
 .green{color:#16a34a;}
 .red{color:#dc2626;}
 .wait{color:#eab308;}
+.hide{display:none;}
 </style>
 </head>
 
@@ -51,17 +75,20 @@ h2{margin-top:0;}
 
 <div class="container">
 
-  <!-- 🔰 Banner Image -->
+  <!-- 🔰 Banner -->
   <div class="banner">
-    <!-- নিজের ছবির লিংক বসান -->
     <img src="https://i.postimg.cc/Fz0dnHkx/Picsart-26-02-03-01-51-57-523.jpg">
   </div>
 
-  <!-- 👀 Live Signal Box -->
+  <!-- 👀 Live Signal -->
   <div class="box">
     <h2>LIVE SIGNAL</h2>
+
     <div id="wingo" class="wingo">WAITING...</div>
     <div id="signal" class="signal wait">WAIT</div>
+
+    <!-- 🔔 Admin Message -->
+    <div id="messageBox" class="message hide"></div>
   </div>
 
 </div>
@@ -90,30 +117,29 @@ signalRef.on("value", snap=>{
 
   const data = snap.val();
   const signalEl = document.getElementById("signal");
+  const messageBox = document.getElementById("messageBox");
 
-  document.getElementById("wingo").innerText = data.wingo;
-  signalEl.innerText = data.signal;
+  document.getElementById("wingo").innerText = data.wingo || "WAITING...";
+  signalEl.innerText = data.signal || "WAIT";
 
-  // reset class
+  // Reset classes
   signalEl.className = "signal";
 
   if(data.signal === "BIG") signalEl.classList.add("big");
   else if(data.signal === "SMALL") signalEl.classList.add("small");
-  else if(data.signal.includes("GREEN")) signalEl.classList.add("green");
-  else if(data.signal.includes("RED")) signalEl.classList.add("red");
+  else if(data.signal?.includes("GREEN")) signalEl.classList.add("green");
+  else if(data.signal?.includes("RED")) signalEl.classList.add("red");
   else signalEl.classList.add("wait");
+
+  // Custom Message
+  if(data.text && data.text.trim() !== ""){
+    messageBox.classList.remove("hide");
+    messageBox.innerText = data.text;
+  }else{
+    messageBox.classList.add("hide");
+  }
 });
 </script>
 
 </body>
 </html>
-Professional (Hack 100% Profit) No Tention
-যারা Dkwin‑এ কাজ করতে আগ্রহী, তারা দ্রুত একাউন্ট খুলুন।
-আমাদের সাথে কাজ করলে পাবেন নিয়মিত গাইডলাইন, প্রয়োজনীয় সাপোর্ট এবং বিভিন্ন এক্সক্লুসিভ সুবিধা।
-সঠিক নিয়ম মেনে কাজ করলে ভালো ফল পাওয়ার সুযোগ রয়েছে।
-আমাদের নির্দেশনা অনুযায়ী এগিয়ে চলুন—ধন্যবাদ।
-📞 লাইভ টাইম সাপোর্ট
-🛠️ প্রয়োজনীয় গাইডলাইন এবং সহায়তা
-💼 নিরাপদ ও নিশ্চিন্তে কাজ করার পরিবেশ
-ভবিষ্যতের জন্য নিজের দক্ষতা ও অভিজ্ঞতা গড়ুন।
-সুন্দর মন্তব্যের জন্য ধন্যবাদ। 
