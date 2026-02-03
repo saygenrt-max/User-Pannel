@@ -52,13 +52,13 @@ h2{
 /* Message Box */
 .message{
   background:#020617;
-  padding:12px;
+  padding:14px;
   border-radius:10px;
   margin-top:12px;
-  font-size:14px;
-  line-height:1.5;
+  font-size:25px; /* ✅ 25px font */
+  line-height:1.6;
   color:#e5e7eb;
-  text-align:left;
+  text-align:center;
 }
 
 /* Colors */
@@ -98,7 +98,8 @@ h2{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig = {
+// Firebase Config
+firebase.initializeApp({
   apiKey: "AIzaSyBmvhGbc7NA9uLdFGkvdWnej-SdgNzk5yk",
   authDomain: "big-small-86ed8.firebaseapp.com",
   databaseURL: "https://big-small-86ed8-default-rtdb.firebaseio.com",
@@ -106,12 +107,36 @@ const firebaseConfig = {
   storageBucket: "big-small-86ed8.appspot.com",
   messagingSenderId: "139562557169",
   appId: "1:139562557169:web:16866c69c54bd9e8005350"
-};
+});
 
-firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const signalRef = db.ref("liveSignal");
 
+// 🔊 Bangla Voice Function
+function speak(text){
+  if(!window.speechSynthesis) return;
+
+  const map = {
+    BIG:"বিগ সিগনাল",
+    SMALL:"স্মল সিগনাল",
+    GREEN:"গ্রিন সিগনাল",
+    RED:"রেড সিগনাল",
+    START:"স্টার্ট",
+    OFF:"অফ",
+    HOLD:"হোল্ড",
+    PROFIT:"প্রফিট",
+    MESSAGE:"এডমিন মেসেজ"
+  };
+
+  const msg = new SpeechSynthesisUtterance(map[text] || text);
+  msg.lang = "bn-BD";
+  msg.rate = 0.95;
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(msg);
+}
+
+// 🔁 Listen Live Signal
 signalRef.on("value", snap=>{
   if(!snap.exists()) return;
 
@@ -122,19 +147,25 @@ signalRef.on("value", snap=>{
   document.getElementById("wingo").innerText = data.wingo || "WAITING...";
   signalEl.innerText = data.signal || "WAIT";
 
-  // Reset classes
+  // Reset class
   signalEl.className = "signal";
 
   if(data.signal === "BIG") signalEl.classList.add("big");
   else if(data.signal === "SMALL") signalEl.classList.add("small");
-  else if(data.signal?.includes("GREEN")) signalEl.classList.add("green");
-  else if(data.signal?.includes("RED")) signalEl.classList.add("red");
+  else if(data.signal === "GREEN") signalEl.classList.add("green");
+  else if(data.signal === "RED") signalEl.classList.add("red");
   else signalEl.classList.add("wait");
 
-  // Custom Message
+  // 🔔 Voice Speak
+  if(data.signal){
+    speak(data.signal);
+  }
+
+  // 📢 Admin Message
   if(data.text && data.text.trim() !== ""){
     messageBox.classList.remove("hide");
     messageBox.innerText = data.text;
+    speak(data.text);
   }else{
     messageBox.classList.add("hide");
   }
