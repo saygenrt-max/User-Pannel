@@ -1,176 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Live Signal</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>S'S DARK COMMUNITY - LIVE TIMER</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-<style>
-body{
-  margin:0;
-  background:#020617;
-  color:white;
-  font-family:Arial, sans-serif;
-}
-.container{
-  max-width:420px;
-  margin:auto;
-  padding:15px;
-}
-.banner img{
-  width:100%;
-  border-radius:14px;
-  margin-bottom:15px;
-}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@600&display=swap');
+        body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#000; font-family:'Rajdhani', sans-serif; }
+        .game-frame { position:absolute; inset:0; z-index:1; }
+        iframe { width:100%; height:100%; border:none; }
+        
+        @keyframes rgb-border {
+            0% { border-color:#ff0000; box-shadow:0 0 10px #ff0000; }
+            50% { border-color:#00ff00; box-shadow:0 0 10px #00ff00; }
+            100% { border-color:#ff0000; box-shadow:0 0 10px #ff0000; }
+        }
 
-/* Main Box */
-.box{
-  background:#0f172a;
-  padding:18px;
-  border-radius:14px;
-  text-align:center;
-}
-h2{
-  margin-top:0;
-  font-size:18px;
-}
+        #dragBox {
+            position:fixed; top:150px; left:20px; width:120px; z-index:99999;
+            background:rgba(0,0,0,0.9); border:2px solid #ff0000; border-radius:12px;
+            padding:10px; text-align:center; animation:rgb-border 3s infinite linear; touch-action:none;
+        }
+        .title { font-family:'Orbitron'; font-size:8px; color:#fff; margin-bottom:8px; }
+        .input-style { width:90%; background:#111; border:1px solid #444; border-radius:4px; color:#00ff88; padding:5px 0; font-size:10px; text-align:center; margin-bottom:8px; }
+        .btn-style { width:100%; background:#fff; color:#000; border:none; border-radius:4px; padding:6px 0; font-size:9px; font-weight:bold; cursor:pointer; }
+        
+        .result-box { background:rgba(255,255,255,0.1); border-radius:8px; padding:8px 0; margin:8px 0; border: 1px solid #333; }
+        #signalText { font-family:'Orbitron'; font-size:12px; font-weight:bold; display: block; }
+        #timerText { font-size: 14px; color: #ffeb3b; font-weight: bold; font-family: 'Orbitron'; margin-top: 5px; display: block; }
+        #periodText { font-size: 8px; color: #888; }
 
-/* Wingo */
-.wingo{
-  font-size:18px;
-  color:#38bdf8;
-  margin-bottom:8px;
-}
-
-/* Signal */
-.signal{
-  font-size:36px;
-  margin:10px 0;
-  font-weight:bold;
-}
-
-/* Message Box */
-.message{
-  background:#020617;
-  padding:14px;
-  border-radius:10px;
-  margin-top:12px;
-  font-size:25px; /* ✅ 25px font */
-  line-height:1.6;
-  color:#e5e7eb;
-  text-align:center;
-}
-
-/* Colors */
-.big{color:#22c55e;}
-.small{color:#ef4444;}
-.green{color:#16a34a;}
-.red{color:#dc2626;}
-.wait{color:#eab308;}
-.hide{display:none;}
-</style>
+        #miniTrigger { position:fixed; top:40%; left:0; width:30px; height:30px; background:#000; border:2px solid #00ff00; border-radius:0 15px 15px 0; display:none; align-items:center; justify-content:center; z-index:100000; color:#00ff00; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-
-  <!-- 🔰 Banner -->
-  <div class="banner">
-    <img src="https://i.postimg.cc/Fz0dnHkx/Picsart-26-02-03-01-51-57-523.jpg">
-  </div>
-
-  <!-- 👀 Live Signal -->
-  <div class="box">
-    <h2>LIVE SIGNAL</h2>
-
-    <div id="wingo" class="wingo">WAITING...</div>
-    <div id="signal" class="signal wait">WAIT</div>
-
-    <!-- 🔔 Admin Message -->
-    <div id="messageBox" class="message hide"></div>
-  </div>
-
+<div class="game-frame">
+    <iframe src="https://dkwin9.com/#/register?invitationCode=578661386353"></iframe>
 </div>
 
-<!-- 🔥 Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<div id="dragBox">
+    <div class="title">S'S DARK LIVE</div>
+    
+    <div id="loginUI">
+        <input type="password" id="passInput" class="input-style" placeholder="PASSWORD">
+        <button class="btn-style" onclick="attemptLogin()">LOGIN</button>
+    </div>
+
+    <div id="dashUI" style="display:none;">
+        <div id="periodText">PERIOD: ---</div>
+        <div class="result-box">
+            <span id="signalText" style="color:#aaa;">WAITING</span>
+            <span id="timerText">00s</span>
+        </div>
+        <button class="btn-style" style="background:red; color:#fff; font-size:7px;" onclick="toggleView(false)">HIDE</button>
+    </div>
+</div>
+
+<div id="miniTrigger" onclick="toggleView(true)">▶</div>
 
 <script>
-// Firebase Config
-firebase.initializeApp({
-  apiKey: "AIzaSyBmvhGbc7NA9uLdFGkvdWnej-SdgNzk5yk",
-  authDomain: "big-small-86ed8.firebaseapp.com",
-  databaseURL: "https://big-small-86ed8-default-rtdb.firebaseio.com",
-  projectId: "big-small-86ed8",
-  storageBucket: "big-small-86ed8.appspot.com",
-  messagingSenderId: "139562557169",
-  appId: "1:139562557169:web:16866c69c54bd9e8005350"
-});
+    const firebaseConfig = {
+        apiKey: "AIzaSyAyrZ0fFcj5Y5HtlKzGJIsBtC9UeGbSDtI",
+        authDomain: "signal-e5583.firebaseapp.com",
+        databaseURL: "https://signal-e5583-default-rtdb.firebaseio.com",
+        projectId: "signal-e5583",
+        storageBucket: "signal-e5583.firebasestorage.app",
+        messagingSenderId: "186804111926",
+        appId: "1:186804111926:web:020f7476c0a9fab2cf2697"
+    };
 
-const db = firebase.database();
-const signalRef = db.ref("liveSignal");
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    let timerInterval;
 
-// 🔊 Bangla Voice Function
-function speak(text){
-  if(!window.speechSynthesis) return;
+    function attemptLogin(){
+        if(document.getElementById("passInput").value === "dkwin"){
+            document.getElementById("loginUI").style.display="none";
+            document.getElementById("dashUI").style.display="block";
+            startListening();
+        } else { alert("WRONG!"); }
+    }
 
-  const map = {
-    BIG:"বিগ সিগনাল",
-    SMALL:"স্মল সিগনাল",
-    GREEN:"গ্রিন সিগনাল",
-    RED:"রেড সিগনাল",
-    START:"স্টার্ট",
-    OFF:"অফ",
-    HOLD:"হোল্ড",
-    PROFIT:"প্রফিট",
-    MESSAGE:"এডমিন মেসেজ"
-  };
+    function startListening() {
+        database.ref('liveControl').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                clearInterval(timerInterval); // আগের টাইমার বন্ধ করা
+                
+                const startTime = data.startTime;
+                const duration = 30; // ৩০ সেকেন্ড
 
-  const msg = new SpeechSynthesisUtterance(map[text] || text);
-  msg.lang = "bn-BD";
-  msg.rate = 0.95;
+                function updateCountdown() {
+                    const now = Date.now();
+                    const elapsed = Math.floor((now - startTime) / 1000);
+                    const remaining = duration - elapsed;
 
-  speechSynthesis.cancel();
-  speechSynthesis.speak(msg);
-}
+                    if (remaining > 0) {
+                        document.getElementById("signalText").innerText = data.signal;
+                        document.getElementById("signalText").style.color = data.color;
+                        document.getElementById("timerText").innerText = remaining + "s";
+                        document.getElementById("periodText").innerText = "PERIOD: " + data.period;
+                    } else {
+                        document.getElementById("signalText").innerText = "WAITING";
+                        document.getElementById("signalText").style.color = "#aaa";
+                        document.getElementById("timerText").innerText = "00s";
+                        clearInterval(timerInterval);
+                    }
+                }
+                updateCountdown();
+                timerInterval = setInterval(updateCountdown, 1000);
+            }
+        });
+    }
 
-// 🔁 Listen Live Signal
-signalRef.on("value", snap=>{
-  if(!snap.exists()) return;
+    // Dragging logic
+    const box = document.getElementById("dragBox");
+    let isMoving=false, ox, oy;
+    box.addEventListener("touchstart", (e) => {
+        if(e.target.tagName==="BUTTON" || e.target.tagName==="INPUT") return;
+        isMoving=true; ox=e.touches[0].clientX-box.offsetLeft; oy=e.touches[0].clientY-box.offsetTop;
+    });
+    document.addEventListener("touchmove", (e) => {
+        if(!isMoving) return;
+        box.style.left=(e.touches[0].clientX-ox)+"px"; box.style.top=(e.touches[0].clientY-oy)+"px";
+    },{passive:false});
+    document.addEventListener("touchend", () => isMoving=false);
 
-  const data = snap.val();
-  const signalEl = document.getElementById("signal");
-  const messageBox = document.getElementById("messageBox");
-
-  document.getElementById("wingo").innerText = data.wingo || "WAITING...";
-  signalEl.innerText = data.signal || "WAIT";
-
-  // Reset class
-  signalEl.className = "signal";
-
-  if(data.signal === "BIG") signalEl.classList.add("big");
-  else if(data.signal === "SMALL") signalEl.classList.add("small");
-  else if(data.signal === "GREEN") signalEl.classList.add("green");
-  else if(data.signal === "RED") signalEl.classList.add("red");
-  else signalEl.classList.add("wait");
-
-  // 🔔 Voice Speak
-  if(data.signal){
-    speak(data.signal);
-  }
-
-  // 📢 Admin Message
-  if(data.text && data.text.trim() !== ""){
-    messageBox.classList.remove("hide");
-    messageBox.innerText = data.text;
-    speak(data.text);
-  }else{
-    messageBox.classList.add("hide");
-  }
-});
+    function toggleView(show){
+        box.style.display=show?"block":"none";
+        document.getElementById("miniTrigger").style.display=show?"none":"flex";
+    }
 </script>
-
 </body>
 </html>
