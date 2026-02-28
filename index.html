@@ -26,7 +26,6 @@
             padding:10px; text-align:center; animation:rgb-border 3s infinite linear; touch-action:none;
         }
         .title { font-family:'Orbitron'; font-size:8px; color:#fff; margin-bottom:8px; }
-        .input-style { width:90%; background:#111; border:1px solid #444; border-radius:4px; color:#00ff88; padding:5px 0; font-size:10px; text-align:center; margin-bottom:8px; }
         .btn-style { width:100%; background:#fff; color:#000; border:none; border-radius:4px; padding:6px 0; font-size:9px; font-weight:bold; cursor:pointer; }
         
         .result-box { background:rgba(255,255,255,0.1); border-radius:8px; padding:8px 0; margin:8px 0; border: 1px solid #333; }
@@ -46,12 +45,8 @@
 <div id="dragBox">
     <div class="title">S'S DARK LIVE</div>
     
-    <div id="loginUI">
-        <input type="password" id="passInput" class="input-style" placeholder="PASSWORD">
-        <button class="btn-style" onclick="attemptLogin()">LOGIN</button>
-    </div>
-
-    <div id="dashUI" style="display:none;">
+    <!-- সরাসরি ড্যাশবোর্ড UI (পাসওয়ার্ড ছাড়া) -->
+    <div id="dashUI">
         <div id="periodText">PERIOD: ---</div>
         <div class="result-box">
             <span id="signalText" style="color:#aaa;">WAITING</span>
@@ -78,22 +73,15 @@
     const database = firebase.database();
     let timerInterval;
 
-    function attemptLogin(){
-        if(document.getElementById("passInput").value === "dkwin"){
-            document.getElementById("loginUI").style.display="none";
-            document.getElementById("dashUI").style.display="block";
-            startListening();
-        } else { alert("WRONG!"); }
-    }
-
+    // সরাসরি ডাটাবেস শোনা শুরু হবে
     function startListening() {
         database.ref('liveControl').on('value', (snapshot) => {
             const data = snapshot.val();
             if(data) {
-                clearInterval(timerInterval); // আগের টাইমার বন্ধ করা
+                clearInterval(timerInterval); 
                 
                 const startTime = data.startTime;
-                const duration = 30; // ৩০ সেকেন্ড
+                const duration = 30; 
 
                 function updateCountdown() {
                     const now = Date.now();
@@ -117,6 +105,9 @@
             }
         });
     }
+
+    // পেজ লোড হলেই সিগন্যাল শোনা শুরু করবে
+    startListening();
 
     // Dragging logic
     const box = document.getElementById("dragBox");
